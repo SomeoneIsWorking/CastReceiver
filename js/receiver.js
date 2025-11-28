@@ -53,18 +53,18 @@ const LOG_RECEIVER_TAG = 'Receiver';
  * Uncomment below line to enable debug logger, show a 'DEBUG MODE' tag at
  * top left corner and show debug overlay.
  */
- context.addEventListener(cast.framework.system.EventType.READY, () => {
+context.addEventListener(cast.framework.system.EventType.READY, () => {
   if (!castDebugLogger.debugOverlayElement_) {
     /**
      *  Enable debug logger and show a 'DEBUG MODE' tag at
      *  top left corner.
      */
-      castDebugLogger.setEnabled(true);
+    castDebugLogger.setEnabled(true);
 
     /**
      * Show debug overlay.
      */
-      castDebugLogger.showDebugLogs(true);
+    castDebugLogger.showDebugLogs(true);
   }
 });
 
@@ -101,7 +101,7 @@ playerManager.addEventListener(
         'LOAD_FAILED: Verify the load request is set up ' +
         'properly and the media is able to play.');
     }
-});
+  });
 
 /*
  * Example analytics tracking implementation. To enable this functionality see
@@ -126,25 +126,25 @@ function addBreaks(mediaInformation) {
   castDebugLogger.debug(LOG_RECEIVER_TAG, "addBreaks: " +
     JSON.stringify(mediaInformation));
   return MediaFetcher.fetchMediaById('fbb_ad')
-  .then((clip1) => {
-    mediaInformation.breakClips = [
-      {
-        id: 'fbb_ad',
-        title: clip1.title,
-        contentUrl: clip1.stream.dash,
-        contentType: 'application/dash+xml',
-        whenSkippable: 5
-      }
-    ];
+    .then((clip1) => {
+      mediaInformation.breakClips = [
+        {
+          id: 'fbb_ad',
+          title: clip1.title,
+          contentUrl: clip1.stream.dash,
+          contentType: 'application/dash+xml',
+          whenSkippable: 5
+        }
+      ];
 
-    mediaInformation.breaks = [
-      {
-        id: 'pre-roll',
-        breakClipIds: ['fbb_ad'],
-        position: 0
-      }
-    ];
-  });
+      mediaInformation.breaks = [
+        {
+          id: 'pre-roll',
+          breakClipIds: ['fbb_ad'],
+          position: 0
+        }
+      ];
+    });
 }
 
 /*
@@ -179,32 +179,32 @@ playerManager.setMessageInterceptor(
 
     // Optionally add breaks to the media information and set the contentUrl.
     return Promise.resolve()
-    // .then(() => addBreaks(loadRequestData.media)) // Uncomment to enable ads.
-    .then(() => {
-      // If the source is a url that points to an asset don't fetch from the
-      // content repository.
-      if (sourceId.includes('.')) {
-        castDebugLogger.debug(LOG_RECEIVER_TAG,
-          "Interceptor received full URL");
-        loadRequestData.media.contentUrl = source;
-        return loadRequestData;
-      } else {
-        // Fetch the contentUrl if provided an ID or entity URL.
-        castDebugLogger.debug(LOG_RECEIVER_TAG, "Interceptor received ID");
-        return MediaFetcher.fetchMediaInformationById(sourceId)
-        .then((mediaInformation) => {
-          loadRequestData.media = mediaInformation;
+      // .then(() => addBreaks(loadRequestData.media)) // Uncomment to enable ads.
+      .then(() => {
+        // If the source is a url that points to an asset don't fetch from the
+        // content repository.
+        if (sourceId.includes('.')) {
+          castDebugLogger.debug(LOG_RECEIVER_TAG,
+            "Interceptor received full URL");
+          loadRequestData.media.contentUrl = source;
           return loadRequestData;
-        })
-      }
-    })
-    .catch((errorMessage) => {
-      let error = new cast.framework.messages.ErrorData(
-        cast.framework.messages.ErrorType.LOAD_FAILED);
-      error.reason = cast.framework.messages.ErrorReason.INVALID_REQUEST;
-      castDebugLogger.error(LOG_RECEIVER_TAG, errorMessage);
-      return error;
-    });
+        } else {
+          // Fetch the contentUrl if provided an ID or entity URL.
+          castDebugLogger.debug(LOG_RECEIVER_TAG, "Interceptor received ID");
+          return MediaFetcher.fetchMediaInformationById(sourceId)
+            .then((mediaInformation) => {
+              loadRequestData.media = mediaInformation;
+              return loadRequestData;
+            })
+        }
+      })
+      .catch((errorMessage) => {
+        let error = new cast.framework.messages.ErrorData(
+          cast.framework.messages.ErrorType.LOAD_FAILED);
+        error.reason = cast.framework.messages.ErrorReason.INVALID_REQUEST;
+        castDebugLogger.error(LOG_RECEIVER_TAG, errorMessage);
+        return error;
+      });
   }
 );
 
@@ -237,6 +237,12 @@ controls.assignButton(
  * Configure the CastReceiverOptions.
  */
 const castReceiverOptions = new cast.framework.CastReceiverOptions();
+
+/*
+ * Enable Shaka Player for HLS playback.
+ * The default MPL has known issues with certain HLS configurations.
+ */
+castReceiverOptions.useShakaForHls = true;
 
 /*
  * Set the player configuration.
