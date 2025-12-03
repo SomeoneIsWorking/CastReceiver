@@ -59,12 +59,12 @@ context.addEventListener(cast.framework.system.EventType.READY, () => {
      *  Enable debug logger and show a 'DEBUG MODE' tag at
      *  top left corner.
      */
-    castDebugLogger.setEnabled(true);
+    // castDebugLogger.setEnabled(true);
 
     /**
      * Show debug overlay.
      */
-    castDebugLogger.showDebugLogs(true);
+    // castDebugLogger.showDebugLogs(true);
   }
 });
 
